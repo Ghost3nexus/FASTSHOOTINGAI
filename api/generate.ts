@@ -108,7 +108,7 @@ export default async function handler(
   try {
     // Call the Gemini API
     const response = await ai.models.generateContent({
-      model: 'gem-2.5-flash-image',
+      model: 'gemini-2.5-flash-image',
       contents: {
         parts: [
           { inlineData: { data: base64Image, mimeType: mimeType } },

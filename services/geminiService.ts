@@ -22,12 +22,26 @@ export const generateIdPhoto = async (
       }),
     });
 
-    const data = await response.json();
-
     if (!response.ok) {
-      // Use the error message from the API, or a default one
-      throw new Error(data.error || 'サーバーでエラーが発生しました。');
+      let errorMessage = `サーバーエラーが発生しました (ステータス: ${response.status})。`;
+      try {
+        // Try to parse error response as JSON, as intended by the API
+        const errorData = await response.json();
+        errorMessage = errorData.error || errorMessage;
+      } catch (e) {
+        // If the response is not JSON (e.g., a Vercel timeout page), read it as text
+        try {
+          const errorText = await response.text();
+          // Avoid showing a huge HTML page as an error
+          errorMessage = errorText.substring(0, 200) + (errorText.length > 200 ? '...' : '');
+        } catch (textError) {
+          // Fallback if reading text also fails
+        }
+      }
+      throw new Error(errorMessage);
     }
+
+    const data = await response.json();
 
     if (!data.base64Image) {
       throw new Error("サーバーから画像データが返されませんでした。");
