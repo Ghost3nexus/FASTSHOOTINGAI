@@ -55,10 +55,14 @@ export default async function handler(
   
   const API_KEY = process.env.API_KEY;
 
-  // Check for API key on the server
+  // Check for API key on the server with a more detailed error message
   if (!API_KEY) {
-    console.error("API_KEY is not set in environment variables.");
-    return res.status(500).json({ error: "サーバーの設定エラーです。アプリケーションの管理者に連絡してください。" });
+    // Log available environment variables for debugging (BE CAREFUL NOT TO LOG SENSITIVE VALUES)
+    console.log('Available environment variable keys:', Object.keys(process.env));
+    console.error("API_KEY environment variable is missing or empty.");
+    return res.status(500).json({ 
+        error: "APIキーが環境変数に設定されていないか、空です。Vercelプロジェクトの「Settings」 > 「Environment Variables」で、`API_KEY` という名前でキーが正しく設定されており、「Production」環境に適用されているか確認してください。設定後は再デプロイが必要です。" 
+    });
   }
 
   const ai = new GoogleGenAI({ apiKey: API_KEY });
@@ -104,7 +108,7 @@ export default async function handler(
   try {
     // Call the Gemini API
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash-image',
+      model: 'gem-2.5-flash-image',
       contents: {
         parts: [
           { inlineData: { data: base64Image, mimeType: mimeType } },
