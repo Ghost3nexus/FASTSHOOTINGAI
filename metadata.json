@@ -1,0 +1,5 @@
+{
+  "name": "Copy of 証明写真AI (ID Photo AI)",
+  "description": "An AI-powered service that automatically generates high-quality ID photos from user-uploaded face pictures, supporting various standards for resumes, passports, and licenses.",
+  "requestFramePermissions": []
+}
