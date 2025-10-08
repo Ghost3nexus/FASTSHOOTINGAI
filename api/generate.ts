@@ -92,7 +92,7 @@ export default async function handler(
         *   Re-light the subject using a professional **three-point lighting setup (key, fill, and back lights)** to ensure the face is evenly illuminated without any harsh shadows, especially under the nose or eyes.
         *   The lighting should be soft and diffused, characteristic of a professional photo studio.
         *   Ensure there's a subtle **catchlight** in the eyes to add life and dimension.
-        *   The final image must be of **ultra-high-resolution photorealistic quality**. Generate the final image with dimensions suitable for a high-resolution print (e.g., at least 1200x1600 pixels), equivalent to 300 DPI, to ensure it is optimized for professional-quality printing.
+        *   The final image must be of **ultra-high-resolution photorealistic quality**, suitable for professional-quality printing.
         *   The final image must be exceptionally sharp, clear, and free of any digital artifacts, blurriness, or compression noise.
 
     5.  **Preserve Identity (Strict Constraint):**
