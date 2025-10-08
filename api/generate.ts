@@ -60,14 +60,13 @@ export default async function handler(
 
   // Construct a more concise prompt for the Gemini API to prevent timeouts
   const prompt = `
-    Generate a professional ID photo based on the user's image.
-    - Change outfit to: ${getOutfitDescription(outfit)}.
-    - Set background to solid color: ${getBackgroundColorHex(backgroundColor)}.
-    - Adjust pose to be forward-facing and centered.
-    - Apply soft, even studio lighting.
-    - CRITICAL: DO NOT change the person's core facial features. They must be recognizable.
-    - ${enableBeautification ? 'Apply subtle, natural skin enhancement.' : 'Do not apply any skin enhancement.'}
-    - The output must be a high-quality image only, with no text.
+    Task: Convert the input image into a professional ID photo.
+    1. Outfit: Change to ${getOutfitDescription(outfit)}.
+    2. Background: Change to a solid color with hex code ${getBackgroundColorHex(backgroundColor)}.
+    3. Pose & Lighting: Adjust to be centered, forward-facing, with even studio lighting.
+    4. Facial Features: Must remain recognizable. Do not alter core features.
+    5. Skin: ${enableBeautification ? 'Apply subtle, natural skin smoothing.' : 'No skin enhancement.'}
+    Output: Return only the final image. No text.
     `;
 
   try {
