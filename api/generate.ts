@@ -26,13 +26,9 @@ function getOutfitDescription(outfit: Outfit): string {
   }
 }
 
-// Detailed instructions for the AI model regarding beautification
+// Simplified instructions for the AI model regarding beautification
 const beautificationInstructions = `
-    6.  **Subtle Beautification Adjustments (Enabled):**
-        *   **Goal:** Apply very subtle, natural enhancements that improve photo quality without altering the subject's fundamental appearance. The subject must remain easily identifiable.
-        *   **Natural Skin Retouching:** Gently smooth the skin texture to reduce the appearance of temporary blemishes, minor redness, or uneven skin tone. It is critical to **preserve permanent features** like moles, scars, and natural skin texture. The result should look like healthy skin, not an artificial or "airbrushed" filter.
-        *   **Minor Symmetry Correction:** If necessary, make microscopic adjustments to facial symmetry, such as subtly balancing the height of eyebrows or eyes. These changes must be so minor that they are not immediately noticeable.
-        *   **Eye Enhancement:** Slightly increase the sharpness and clarity of the irises to make the eyes look more awake and lively. Avoid unnatural brightening or color changes.
+    6.  **Beautification:** Apply subtle, natural skin smoothing to reduce minor blemishes, but preserve permanent features like moles and scars. Slightly enhance eye clarity.
 `;
 
 // The main handler for the serverless function
@@ -61,48 +57,27 @@ export default async function handler(
     console.log('Available environment variable keys:', Object.keys(process.env));
     console.error("API_KEY environment variable is missing or empty.");
     return res.status(500).json({ 
-        error: "APIキーが環境変数に設定されていないか、空です。Vercelプロジェクトの「Settings」 > 「Environment Variables」で、`API_KEY` という名前でキーが正しく設定されており、「Production」環境に適用されているか確認してください。設定後は再デプロイが必要です。" 
+        error: "サーバー側のAPIキー設定に問題があります。Vercelプロジェクトの「Settings」 > 「Environment Variables」で、`API_KEY` という名前の環境変数が正しく設定され、「Production」環境に適用されているか確認してください。設定後は再デプロイが必要です。" 
     });
   }
 
   const ai = new GoogleGenAI({ apiKey: API_KEY });
 
-  // Construct the prompt for the Gemini API
+  // Construct a more concise prompt for the Gemini API to prevent timeouts
   const prompt = `
-    You are an expert AI photo editor specializing in professional headshots and official identification photos.
-    Your task is to transform the user's uploaded photo into a high-quality, regulation-compliant ID photo.
+    As an expert AI photo editor, transform the user's photo into a professional ID photo following these rules:
 
-    **Instructions:**
+    1.  **Clothing:** Change the attire to a ${getOutfitDescription(outfit)}. Ensure it fits naturally.
+    2.  **Background:** Replace the original background with a solid, smooth color: ${getBackgroundColorHex(backgroundColor)}.
+    3.  **Composition:** Center the subject, looking forward. Adjust head tilt so the eye-line is horizontal. Ensure proper headroom for an ID photo.
+    4.  **Lighting & Quality:** Re-light the subject with soft, professional studio lighting. Eliminate harsh shadows. The final image must be sharp, clear, high-resolution, and suitable for printing.
+    5.  **Identity:** CRITICAL: Do not alter core facial features (eyes, nose, mouth, face shape). The subject must be easily identifiable.
+    ${enableBeautification 
+        ? beautificationInstructions
+        : '6. **Beautification:** All cosmetic adjustments are disabled.'
+    }
 
-    1.  **Attire Replacement:**
-        *   Change the subject's clothing to a ${getOutfitDescription(outfit)}.
-        *   The clothing must look natural, fitting the subject's posture and body shape.
-        *   Pay close attention to a seamless blend around the neck and shoulders.
-
-    2.  **Background Replacement:**
-        *   Remove the original background entirely.
-        *   Replace it with a smooth, uniform, solid-colored background with the hex code ${getBackgroundColorHex(backgroundColor)}.
-
-    3.  **Composition and Framing:**
-        *   The subject must be perfectly centered and facing directly forward.
-        *   Adjust the head position to meet standard ID photo requirements (e.g., passport photos), ensuring there is appropriate headroom.
-        *   Correct any minor head tilt to ensure the eye-line is horizontal.
-
-    4.  **Lighting and Image Quality:**
-        *   Re-light the subject using a professional **three-point lighting setup (key, fill, and back lights)** to ensure the face is evenly illuminated without any harsh shadows, especially under the nose or eyes.
-        *   The lighting should be soft and diffused, characteristic of a professional photo studio.
-        *   Ensure there's a subtle **catchlight** in the eyes to add life and dimension.
-        *   The final image must be of **ultra-high-resolution photorealistic quality**, suitable for professional-quality printing.
-        *   The final image must be exceptionally sharp, clear, and free of any digital artifacts, blurriness, or compression noise.
-
-    5.  **Preserve Identity (Strict Constraint):**
-        *   This is the most important rule. You must **not** alter the subject's core facial features (eyes, nose, mouth, face shape) in any way that would make them difficult to identify. The expression should remain neutral and professional.
-        *   ${!enableBeautification ? 'All forms of beautification, skin smoothing, or cosmetic filtering are strictly forbidden.' : ''}
-
-    ${enableBeautification ? beautificationInstructions : ''}
-
-    **Final Output:**
-    The output must ONLY be the final, edited image file. Do not include any text, logos, or other information.
+    Output only the final image file.
     `;
 
   try {
