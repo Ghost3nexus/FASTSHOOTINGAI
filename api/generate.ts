@@ -27,9 +27,7 @@ function getOutfitDescription(outfit: Outfit): string {
 }
 
 // Simplified instructions for the AI model regarding beautification
-const beautificationInstructions = `
-    6.  **Beautification:** Apply subtle, natural skin smoothing to reduce minor blemishes, but preserve permanent features like moles and scars. Slightly enhance eye clarity.
-`;
+const beautificationInstructions = `Subtle, natural skin smoothing to reduce minor blemishes, preserve permanent features like moles/scars, and slightly enhance eye clarity.`;
 
 // The main handler for the serverless function
 export default async function handler(
@@ -65,19 +63,16 @@ export default async function handler(
 
   // Construct a more concise prompt for the Gemini API to prevent timeouts
   const prompt = `
-    As an expert AI photo editor, transform the user's photo into a professional ID photo following these rules:
-
-    1.  **Clothing:** Change the attire to a ${getOutfitDescription(outfit)}. Ensure it fits naturally.
-    2.  **Background:** Replace the original background with a solid, smooth color: ${getBackgroundColorHex(backgroundColor)}.
-    3.  **Composition:** Center the subject, looking forward. Adjust head tilt so the eye-line is horizontal. Ensure proper headroom for an ID photo.
-    4.  **Lighting & Quality:** Re-light the subject with soft, professional studio lighting. Eliminate harsh shadows. The final image must be sharp, clear, high-resolution, and suitable for printing.
-    5.  **Identity:** CRITICAL: Do not alter core facial features (eyes, nose, mouth, face shape). The subject must be easily identifiable.
-    ${enableBeautification 
-        ? beautificationInstructions
-        : '6. **Beautification:** All cosmetic adjustments are disabled.'
-    }
-
-    Output only the final image file.
+    Objective: Convert user photo to a professional ID photo.
+    Rules:
+    - Attire: Change to a ${getOutfitDescription(outfit)}. Fit naturally.
+    - Background: Replace with solid color, hex code ${getBackgroundColorHex(backgroundColor)}.
+    - Pose: Center subject, forward-facing, horizontal eye-line. Ensure proper ID photo headroom.
+    - Lighting: Re-light with professional, soft studio lighting. Eliminate harsh shadows.
+    - Quality: Output must be high-resolution, sharp, clear, and print-ready.
+    - Identity Preservation: CRITICAL - Do NOT alter core facial features (eyes, nose, mouth, shape). Subject must remain identifiable.
+    - Beautification: ${enableBeautification ? beautificationInstructions : 'Disabled.'}
+    - Final Output: Return only the final image file. No text.
     `;
 
   try {
