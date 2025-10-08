@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "description": "ID Photo AI Generator",
+  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
